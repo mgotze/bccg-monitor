@@ -6,7 +6,6 @@ const resultsRoutes = require('./src/routes/resultsRoutes');
 
 const app = express();
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
