@@ -1,50 +1,38 @@
-erver.jsconst express = require('express');
-const app = express();
-const port = 3000;
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const resultsRoutes = require('./src/routes/resultsRoutes');
 
-// Permite que o Express parse requisições em JSON:
+const app = express();
+
+// Middlewares
+app.use(cors());
 app.use(express.json());
+
+// Conexão com MongoDB
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log('Conectado ao MongoDB com sucesso!');
+  })
+  .catch((error) => {
+    console.error('Erro ao conectar no MongoDB:', error);
+  });
+
+// Rotas da aplicação
+app.use('/api/results', resultsRoutes);
 
 // Rota de teste
 app.get('/', (req, res) => {
-  res.send('API da BCGame Crash - Online');
+  res.send('API do BCGame Monitor está online!');
 });
 
+// Inicia o servidor
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`API rodando em http://localhost:${port}`);
-});
-
-
-const CrashResult = require('./CrashResult');
-
-// (dentro do app.listen, antes de iniciar o servidor)
-CrashResult.sync({ alter: true })
-  .then(() => {
-    console.log('Banco de dados sincronizado');
-    app.listen(port, () => {
-      console.log(`API rodando em http://localhost:${port}`);
-    });
-  })
-  .catch((err) => console.error('Erro ao sincronizar banco: ', err));
-
-
-app.post('/api/crash-results', async (req, res) => {
-  try {
-    // Dados enviados pela extensão
-    const { roundId, crashPoint } = req.body;
-
-    // Cria novo registro no banco
-    const result = await CrashResult.create({
-      roundId,
-      crashPoint
-    });
-
-    return res.status(201).json({
-      message: 'Resultado salvo com sucesso',
-      data: result
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Erro ao salvar resultado' });
-  }
+  console.log(`Servidor rodando na porta ${port}`);
 });
