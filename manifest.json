@@ -1,0 +1,16 @@
+{
+  "name": "BCGame Crash Observer",
+  "version": "1.0",
+  "description": "Monitora resultados do jogo Crash da BCGame e envia para API local",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://bc.game/*"], 
+      "js": ["content.js"]
+    }
+  ]
+}
